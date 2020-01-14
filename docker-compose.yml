@@ -29,9 +29,9 @@ services:
       timeout: 5s
       retries: 5
 
-  kong4:
+  kong:
     build: ./kong
-    container_name: kong4
+    container_name: kong
     image: leo/kong
     volumes: 
       - ./data/certbot/conf:/etc/letsencrypt
