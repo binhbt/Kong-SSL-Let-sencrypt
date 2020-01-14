@@ -1,0 +1,88 @@
+###Secure request api with kong - acl - jwt
+
+//Create service
+ curl -i -X POST \
+  --url http://localhost:8001/services/ \
+  --data 'name=example-service' \
+  --data 'host=jsonplaceholder.typicode.com'
+//Add route
+curl -i -X POST \
+  --url http://localhost:8001/services/example-service/routes \
+  --data 'hosts[]=example.com'\
+  --data 'paths[]=/fake-api '
+
+
+curl -X POST http://localhost:8001/services/example-service/plugins \
+    --data "name=jwt" 
+
+//user
+curl -d "username=user123&custom_id=SOME_CUSTOM_ID" http://localhost:8001/consumers/
+
+curl -X POST http://localhost:8001/consumers/c168fc46-9926-45f2-9c51-eb1ff1d076ae/jwt -H "Content-Type: application/x-www-form-urlencoded"
+
+curl -iL -X GET   --url http://localhost:8000/fake-api/users   --header 'Host: example.com' --header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI5U1BpSnNKY29TQXVENnlVTGlKbklSd0ZXN2pXT1I2dSJ9.1Ycy9AbmfbG87O-gKwjSY4cw-EV7gy8ls9ia-78ex_Y'
+
+//customer
+curl -X POST http://localhost:8001/consumers/customer123/jwt -H "Content-Type: application/x-www-form-urlencoded"
+curl -iL -X GET   --url http://localhost:8000/fake-api/users   --header 'Host: example.com' --header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJVNHU0R1M0eUpwNXhnZEJtYUdBbVNKUWpqaEpHTThTZCJ9.lcP9Dxm9m5EfpQ5Pa8jOlJkYle2eK-1qydxJvG4cdEo'
+
+https://docs.konghq.com/0.14.x/getting-started/configuring-a-service/
+//create service
+curl -i -X POST \
+  --url http://localhost:8001/services/ \
+  --data 'name=example-service' \
+  --data 'url=https://jsonplaceholder.typicode.com' \
+  --data 'host=example.com'
+
+//add route for service
+curl -i -X POST \
+  --url http://localhost:8001/services/example-service/routes \
+  --data 'hosts[]=example.com' \
+  --data 'paths[]=/fake-api'
+
+//test request
+curl -i -X GET \
+  --url http://localhost:8000/fake-api/users \
+  --header 'Host: example.com'
+
+//Add jwt plugin for service
+curl -X POST http://localhost:8001/services/example-service/plugins \
+    --data "name=jwt" 
+
+//Create a consumer
+curl -d "username=user1&custom_id=user1_id" http://localhost:8001/consumers/
+curl -d "username=customer1&custom_id=customer1_id" http://localhost:8001/consumers/
+
+//Create a JWT credential for consumer
+curl -X POST http://localhost:8001/consumers/user1/jwt -H "Content-Type: application/x-www-form-urlencoded"
+
+View jwt info in user jwt tab
+Use https://jwt.io/ to create token from key and secret key
+In payload have iss:value_of_key
+Secret key(your-256-bit-secret) use secret_value
+
+//Request to api use jwt token
+curl http://localhost:8000/fake-api/users \
+    -H 'Host: example.com' \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJLM0lxMEdIRHBmOW16SFFrV29uMjF2ZVVpcERZQ2VVTSIsInN1YiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjIsInVzZXJfZGF0YSI6eyJ1c2VyX2lkIjoxMjMsImZ1bGxfbmFtZSI6IkxlbyBidWkifX0.q34DoeynAAQHNRwI1RpilJj4aMIojDEXBoeEPsZ6nNk'
+
+//Add example-service plugin acl
+curl -X POST http://localhost:8001/services/example-service/plugins \
+    --data "name=acl"  \
+    --data "config.whitelist=users" \
+    --data "config.hide_groups_header=true"
+
+//Add user1 to group users
+curl -X POST http://localhost:8001/consumers/user1/acls \
+    --data "group=users"
+
+//Request to api use jwt token
+curl http://localhost:8000/fake-api/users \
+    -H 'Host: example.com' \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkbWhHTEVURjkzSGdYa0FrRWR0Mnc0TjhWVmo4bG5wRSIsInN1YiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjIsInVzZXJfZGF0YSI6eyJ1c2VyX2lkIjoxMjMsImZ1bGxfbmFtZSI6IkxlbyBidWkifX0.JiCT02KpvCaOhc8tlTdEWpzz50V4VVXSefsaGM6FoBE'
+//success
+//
+
+
+
+

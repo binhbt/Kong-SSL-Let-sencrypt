@@ -1,0 +1,160 @@
+//Create service
+ curl -i -X POST \
+  --url http://localhost:8001/services/ \
+  --data 'name=admin-service' \
+  --data 'host=admin'
+
+//Add route
+curl -i -X POST \
+  --url http://localhost:8001/services/admin-service/routes \
+  --data 'hosts[]=admin.com'
+
+//Test
+curl -iL -X GET   --url http://localhost:8000   --header 'Host: admin.com'
+
+//Create user service
+ curl -i -X POST \
+  --url http://localhost:8001/services/ \
+  --data 'name=user-service' \
+  --data 'host=user'
+
+//Add route
+curl -i -X POST \
+  --url http://localhost:8001/services/user-service/routes \
+  --data 'hosts[]=user.com'\
+  --data 'paths[]=/user'
+
+//Test
+curl -iL -X GET   --url http://localhost:8000/user   --header 'Host: user.com'
+
+//Add route for public
+curl -i -X POST \
+  --url http://localhost:8001/services/user-service/routes \
+  --data 'hosts[]=user.com'\
+  --data 'paths[]=/public'
+
+//Test
+curl -iL -X GET   --url http://localhost:8000/public   --header 'Host: user.com'
+
+//Create provider service
+ curl -i -X POST \
+  --url http://localhost:8001/services/ \
+  --data 'name=provider-service' \
+  --data 'host=provider'
+
+//Add route
+curl -i -X POST \
+  --url http://localhost:8001/services/provider-service/routes \
+  --data 'hosts[]=provider.com'\
+  --data 'paths[]=/provider'
+
+//Test
+curl -iL -X GET   --url http://localhost:8000/provider   --header 'Host: provider.com'
+
+
+curl -d "username=user1&custom_id=user1_id" http://localhost:8001/consumers/
+curl -d "username=user2&custom_id=user2_id" http://localhost:8001/consumers/
+curl -d "username=user3&custom_id=user3_id" http://localhost:8001/consumers/
+
+curl -d "username=provider1&custom_id=provider1_id" http://localhost:8001/consumers/
+curl -d "username=provider2&custom_id=provider2_id" http://localhost:8001/consumers/
+curl -d "username=provider3&custom_id=provider3_id" http://localhost:8001/consumers/
+
+curl -d "username=admin1&custom_id=admin1_id" http://localhost:8001/consumers/
+curl -d "username=admin2&custom_id=admin2_id" http://localhost:8001/consumers/
+curl -d "username=admin3&custom_id=admin3_id" http://localhost:8001/consumers/
+
+//Add jwt key for all consumer
+curl -X POST http://localhost:8001/consumers/admin1/jwt -H "Content-Type: application/x-www-form-urlencoded"
+curl -X POST http://localhost:8001/consumers/admin2/jwt -H "Content-Type: application/x-www-form-urlencoded"
+curl -X POST http://localhost:8001/consumers/admin3/jwt -H "Content-Type: application/x-www-form-urlencoded"
+curl -X POST http://localhost:8001/consumers/user1/jwt -H "Content-Type: application/x-www-form-urlencoded"
+curl -X POST http://localhost:8001/consumers/user2/jwt -H "Content-Type: application/x-www-form-urlencoded"
+curl -X POST http://localhost:8001/consumers/user3/jwt -H "Content-Type: application/x-www-form-urlencoded"
+curl -X POST http://localhost:8001/consumers/provider1/jwt -H "Content-Type: application/x-www-form-urlencoded"
+curl -X POST http://localhost:8001/consumers/provider2/jwt -H "Content-Type: application/x-www-form-urlencoded"
+curl -X POST http://localhost:8001/consumers/provider3/jwt -H "Content-Type: application/x-www-form-urlencoded"
+
+
+//Add user to group ACL
+curl -X POST http://localhost:8001/consumers/user1/acls \
+    --data "group=users"
+curl -X POST http://localhost:8001/consumers/user2/acls \
+    --data "group=users"
+curl -X POST http://localhost:8001/consumers/user3/acls \
+    --data "group=users"
+
+curl -X POST http://localhost:8001/consumers/admin1/acls \
+    --data "group=admins"
+curl -X POST http://localhost:8001/consumers/admin2/acls \
+    --data "group=admins"
+curl -X POST http://localhost:8001/consumers/admin3/acls \
+    --data "group=admins"
+
+curl -X POST http://localhost:8001/consumers/provider1/acls \
+    --data "group=providers"
+curl -X POST http://localhost:8001/consumers/provider2/acls \
+    --data "group=providers"
+curl -X POST http://localhost:8001/consumers/provider3/acls \
+    --data "group=providers"
+
+
+//Add ACL for admin route
+curl -X POST http://localhost:8001/routes/09625e25-14a7-4210-ae93-11e19c2d4eb6/plugins \
+    --data "name=acl"  \
+    --data "config.whitelist=admins" \
+    --data "config.hide_groups_header=true"
+//Enable jwt
+curl -X POST http://localhost:8001/routes/09625e25-14a7-4210-ae93-11e19c2d4eb6/plugins \
+    --data "name=jwt" 
+
+//Add ACL for user route
+curl -X POST http://localhost:8001/routes/395be1ea-a81b-4e80-afce-edf6533ec09f/plugins \
+    --data "name=acl"  \
+    --data "config.whitelist=admins" \
+    --data "config.whitelist=users" \
+    --data "config.hide_groups_header=true"
+//Enable jwt
+curl -X POST http://localhost:8001/routes/395be1ea-a81b-4e80-afce-edf6533ec09f/plugins \
+    --data "name=jwt" 
+
+
+//Add ACL for provider route
+curl -X POST http://localhost:8001/routes/df6afa89-d8d0-485d-9521-c36f378c8edd/plugins \
+    --data "name=acl"  \
+    --data "config.whitelist=providers" \
+    --data "config.hide_groups_header=true"
+//Enable jwt
+curl -X POST http://localhost:8001/routes/df6afa89-d8d0-485d-9521-c36f378c8edd/plugins \
+    --data "name=jwt" 
+
+//Test request
+admin key
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJWY1U0ZlVwYU1KUW5iTkVOZWRva293b3RhMTVqdDV3eiIsInN1YiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.FuvN82By_MB7nBXSapUsWkcCLuZo--aPnKdrX3_LQjg
+user key
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwdHp4MmprZzBnT1MxbjVpMjhmUEhrcnpTUERvS1EzTCIsInN1YiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.d_HLqYyFdIPGbprQ_Rxt3CLD-7iKcx0zaAAeA-uanyo
+provider key
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJuanhJalp0aXB1b3FlZUt5TnRXUmZCUjdETmpTUTBCQSIsInN1YiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.JlGuP2Gc-ZrEeEQYXob-shdcMa9ga9RTibxKPU6tdI8
+
+//Admin request valid
+curl -iL -X GET   --url http://localhost:8000/admin/homepage   --header 'Host: admin.com' --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJWY1U0ZlVwYU1KUW5iTkVOZWRva293b3RhMTVqdDV3eiIsInN1YiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.FuvN82By_MB7nBXSapUsWkcCLuZo--aPnKdrX3_LQjg'
+
+
+//User request valid with admin key
+curl -iL -X GET   --url http://localhost:8000/user/homepage   --header 'Host: user.com' --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJWY1U0ZlVwYU1KUW5iTkVOZWRva293b3RhMTVqdDV3eiIsInN1YiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.FuvN82By_MB7nBXSapUsWkcCLuZo--aPnKdrX3_LQjg'
+//User request valid with user key
+curl -iL -X GET   --url http://localhost:8000/user/homepage   --header 'Host: user.com' --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwdHp4MmprZzBnT1MxbjVpMjhmUEhrcnpTUERvS1EzTCIsInN1YiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.d_HLqYyFdIPGbprQ_Rxt3CLD-7iKcx0zaAAeA-uanyo'
+//Provider request valid
+curl -iL -X GET   --url http://localhost:8000/provider/homepage   --header 'Host: provider.com' --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJuanhJalp0aXB1b3FlZUt5TnRXUmZCUjdETmpTUTBCQSIsInN1YiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.JlGuP2Gc-ZrEeEQYXob-shdcMa9ga9RTibxKPU6tdI8'
+
+//Enable jwt-claims-headers plugin for admin route
+curl -X POST http://localhost:8001/routes/09625e25-14a7-4210-ae93-11e19c2d4eb6/plugins \
+  --data "name=jwt-claims-headers" \
+  --data "config.uri_param_names=jwt" \
+  --data "config.claims_to_include=.*" \
+  --data "config.continue_on_error=true"
+
+//Test admin request for checking header
+curl -iL -X GET   --url http://localhost:8000   --header 'Host: admin.com' --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJWY1U0ZlVwYU1KUW5iTkVOZWRva293b3RhMTVqdDV3eiIsInN1YiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.FuvN82By_MB7nBXSapUsWkcCLuZo--aPnKdrX3_LQjg'
+
+
