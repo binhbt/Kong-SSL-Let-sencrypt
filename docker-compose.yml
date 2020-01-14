@@ -44,8 +44,8 @@ services:
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_ADMIN_ERROR_LOG: /dev/stderr
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
-      KONG_SSL_CERT: /etc/letsencrypt/live/example.org/fullchain.pem
-      KONG_SSL_CERT_KEY: /etc/letsencrypt/live/example.org/privkey.pem
+      KONG_SSL_CERT: /etc/letsencrypt/live/kong.sigma-solutions.vn/fullchain.pem
+      KONG_SSL_CERT_KEY: /etc/letsencrypt/live/kong.sigma-solutions.vn/privkey.pem
     ports:
       - 8002:8000
       - 8003:8001
