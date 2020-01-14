@@ -1,51 +1,28 @@
-# kongpose
-
-Run [Kong API Gateway, Community Edition](https://konghq.com/kong-community-edition)
-development setup with [docker-compose](https://docs.docker.com/compose).
-Includes [Konga](https://github.com/pantsel/konga) as admin webapp.
-
-Originally based on [Yuan Cheung's docker-compose-kong](https://github.com/zhangyuan/docker-compose-kong), with the following additions:
-
-- Add [declarative configuration examples](https://github.com/asyrjasalo/kongpose/tree/master/examples)
-  - Includes securing [Kong Admin API](https://docs.konghq.com/0.14.x/secure-admin-api/#kong-api-loopback)
-- Use PostgreSQL 9.6 over 9.5, and Alpine Linux based image for smaller size
-- Prefer `kong-migration` for initializing the database, rather than `setup.sh`
-- Prefer Docker's own health checks, over using `wait-for-it.sh`
-- Remove `bash` from built images, as it is not then needed
-- Tidy up `docker-compose.yml`, removed `links` as they are not mandatory here
-- Remove `start.sh` as `docker-compose restart` is a single command anyway
-- Add MongoDB for storing Konga users
-- Improve healthchecks for checking if database migrations have ran
-- Upgrade Kong to 1.0.0rc3, use Alpine Linux based image for smaller size
-- Upgrade Kong Dashboard to latest, to support Kong >= 0.13
-  - though commented out in `docker-compose.yml` as Konga is enough
+# Boilerplate for KONG with Let’s Encrypt on docker-compose
 
 
-## Usage
+`init-letsencrypt.sh` fetches and ensures the renewal of a Let’s
+Encrypt certificate for one or multiple domains in a docker-compose
+setup with nginx.
+This is useful when you need to set up nginx as a reverse proxy for an
+application.
 
-    docker-compose up
+## Installation
+1. [Install docker-compose](https://docs.docker.com/compose/install/#install-compose).
 
-See [examples of managing APIs with YAML](https://github.com/asyrjasalo/kongpose/tree/master/examples).
+2. Clone this repository: `git clone https://github.com/binhbt/Kong-SSL-Let-sencrypt.git .`
 
+3. Modify configuration:
+- Add domains and email addresses to init-letsencrypt.sh
+- Replace all occurrences of example.org with primary domain (the first one you added to init-letsencrypt.sh) in KONG enviroment
 
-## Endpoints
+4. Run the init script:
 
-### Kong
+        ./init-letsencrypt.sh
 
-- Proxy: [http://localhost:8000](http://localhost:8000)
-- Proxy w/ SSL: [https://localhost:8443](https://localhost:8443)
-- Admin API: [http://localhost:8001](http://localhost:8001)
+5. Run the server:
 
-Kong uses PostgreSQL (9.6) with a persistent Docker volume for its credentials.
+        docker-compose up
 
-### Konga
-
-- GUI: [http://localhost:1337](http://localhost:1337)
-
-The following default users are configured in `konga/user_seed.js`:
-- admin / adminadminadmin
-- demo / demodemodemo
-
-After logging in as admin, create a new connection with URL `http://kong:8001`.
-
-Konga uses MongoDB (4.1) with a persistent Docker volume for its credentials.
+## License
+All code in this repository is licensed under the terms of the `MIT License`. For further information please refer to the `LICENSE` file.
