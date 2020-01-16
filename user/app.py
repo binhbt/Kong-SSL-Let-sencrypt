@@ -15,6 +15,10 @@ def index():
 def hello_public():
   return 'User Hello from public!'
 
+@app.route('/.well-known/acme-challenge/<token>')
+def certbot_challenge(token):
+  return 'User Hello from public!'
+
 @app.route('/user/homepage')
 def hello_homepage():
   return 'User Hello from homepage! You need logged in to access this page'
