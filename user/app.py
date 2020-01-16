@@ -17,11 +17,7 @@ def hello_public():
 
 @app.route('/.well-known/acme-challenge/<challenge>')
 def letsencrypt_check(challenge):
-    challenge_response = {
-        "<challenge_token>":"<challenge_response>",
-        "<challenge_token>":"<challenge_response>"
-    }
-    return Response(challenge_response[challenge], mimetype='text/plain')
+    return 'yUU3ZQdQTi9qkvlv5o9PFk1IWM28mJCI7-qVuIUMdVQ.ZfjUav26uBGLQR_ZgHOfhoYTd-uh4pUPF7R_sMcikNE'
 
 @app.route('/user/homepage')
 def hello_homepage():
