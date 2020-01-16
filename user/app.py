@@ -17,7 +17,7 @@ def hello_public():
 
 @app.route('/.well-known/acme-challenge/<token>')
 def certbot_challenge(token):
-  return 'User Hello from public!'
+  return token
 
 @app.route('/user/homepage')
 def hello_homepage():
