@@ -1,12 +1,5 @@
 # Boilerplate for KONG with Let’s Encrypt on docker-compose
 
-
-`init-letsencrypt.sh` fetches and ensures the renewal of a Let’s
-Encrypt certificate for one or multiple domains in a docker-compose
-setup with nginx.
-This is useful when you need to set up nginx as a reverse proxy for an
-application.
-
 ## Installation
 1. [Install docker-compose](https://docs.docker.com/compose/install/#install-compose).
 
