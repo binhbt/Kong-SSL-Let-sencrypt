@@ -12,17 +12,23 @@ application.
 
 2. Clone this repository: `git clone https://github.com/binhbt/Kong-SSL-Let-sencrypt.git .`
 
-3. Modify configuration:
-- Add domains and email addresses to init-letsencrypt.sh
-- Replace all occurrences of example.org with primary domain (the first one you added to init-letsencrypt.sh) in KONG enviroment
+3. Install CertBot on server: sudo apt-get install certbot
+- sudo certbot certonly --manual
+- Add domains and email addresses to generate key
+- Make sure your web server displays the following content at
+http://domain/.well-known/acme-challenge/ya6k1ed-SOME-LONG-URL before continuing: 
+-Get token and paste to app.letsencrypt_check response for endpoint /.well-known/acme-challenge/ 
+-Enter to continue
+-Now SSL key will save to /etc/letsencrypt/live/your-domain/fullchain.pem and /etc/letsencrypt/live/your-domain/privkey.pem 
+-Add SSL key to KONG by: 
+`curl -i -m 60 -X POST http://localhost:8001/certificates \
+-F "cert=$(cat /etc/letsencrypt/live/your-domain/fullchain.pem)" \
+-F "key=$(cat /etc/letsencrypt/live/your-domain/privkey.pem)" \
+-F "snis=your-domain"`
 
-4. Run the init script:
+4. Now can access https://your-domain
 
-        ./init-letsencrypt.sh
 
-5. Run the server:
-
-        docker-compose up
 
 ## License
 All code in this repository is licensed under the terms of the `MIT License`. For further information please refer to the `LICENSE` file.
