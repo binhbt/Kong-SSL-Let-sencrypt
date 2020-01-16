@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response
 import uuid
 import os
 
@@ -15,9 +15,13 @@ def index():
 def hello_public():
   return 'User Hello from public!'
 
-@app.route('/.well-known/acme-challenge/<token>')
-def certbot_challenge(token):
-  return token
+@app.route('/.well-known/acme-challenge/<challenge>')
+def letsencrypt_check(challenge):
+    challenge_response = {
+        "<challenge_token>":"<challenge_response>",
+        "<challenge_token>":"<challenge_response>"
+    }
+    return Response(challenge_response[challenge], mimetype='text/plain')
 
 @app.route('/user/homepage')
 def hello_homepage():
