@@ -44,8 +44,8 @@ services:
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_ADMIN_ERROR_LOG: /dev/stderr
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
-      KONG_SSL_CERT: /etc/letsencrypt/live/kong.sigma-solutions.vn/fullchain.pem
-      KONG_SSL_CERT_KEY: /etc/letsencrypt/live/kong.sigma-solutions.vn/privkey.pem
+      # KONG_SSL_CERT: /etc/letsencrypt/live/kong.sigma-solutions.vn/fullchain.pem
+      # KONG_SSL_CERT_KEY: /etc/letsencrypt/live/kong.sigma-solutions.vn/privkey.pem
     ports:
       - 80:8000
       - 8001:8001
@@ -55,13 +55,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  certbot:
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+  # certbot:
+  #   image: certbot/certbot
+  #   restart: unless-stopped
+  #   volumes:
+  #     - /etc/letsencrypt:/etc/letsencrypt
+  #     - ./data/certbot/www:/var/www/certbot
+  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
   user:
     image: leo/user
